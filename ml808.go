@@ -2,6 +2,7 @@ package ml808
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -59,6 +60,7 @@ func (m *ML808) Connect() error {
 }
 
 func (m *ML808) Disconnect() error {
+	m.connected = false
 	m.close <- true
 	return nil
 }
@@ -70,6 +72,10 @@ func (m *ML808) IsConnected() bool {
 const (
 	RM = "\x0205RM   9C\x03"
 )
+const (
+	//            cmdchecksum
+	GU = "\x0205GU%03d%s\x03"
+)
 
 func (m *ML808) Version() (string, error) {
 	if !m.connected {
@@ -78,10 +84,41 @@ func (m *ML808) Version() (string, error) {
 	if err := CmdInit(m.s); err != nil {
 		return "", err
 	}
-	m.s.Write([]byte(RM))
+	m.s.Write(makeCmd([]byte("RM   ")))
 	if _, dat, err := CmdEndWithData(m.s); err != nil {
 		return "", err
 	} else {
 		return string(dat), nil
+	}
+}
+
+func (m *ML808) GC(ch int) (p, t, d, f float64, err error) {
+	if dat, e := m.chCommon(ch); err != nil {
+		err = e
+		return
+	} else {
+		log.Println(string(dat))
+		p, t, d, f, err = ParseGC(dat)
+		return
+	}
+}
+
+func (m *ML808) chCommon(ch int) ([]byte, error) {
+	if !m.connected {
+		return []byte{}, ErrNotConnected
+	}
+	if err := CmdInit(m.s); err != nil {
+		return []byte{}, err
+	}
+	_, e := m.s.Write(makeCmd([]byte(fmt.Sprintf("%s%03d", "GC", ch))))
+	if e != nil {
+		return []byte{}, e
+	}
+	if cmd, dat, err := CmdEndWithData(m.s); err != nil {
+		log.Println(err)
+		return []byte{}, err
+	} else {
+		log.Println(string(dat), cmd)
+		return dat, nil
 	}
 }

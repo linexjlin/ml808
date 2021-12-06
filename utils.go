@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"github.com/tarm/serial"
 )
@@ -56,15 +57,15 @@ func extractData(data []byte) (cmd string, dat []byte, err error) {
 			err = errors.New("Invalid data")
 			return
 		}
-		csum := checkSum(data[1 : dlen+1+2])
-		fmt.Println(fmt.Sprintf("%x", csum))
-		fmt.Println(fmt.Sprintf("%s", data[dlen+1+1:dlen+2+1]))
-		if fmt.Sprintf("%x", csum) != string(data[dlen+1+1:dlen+2+1]) {
+		csum := checkSum(data[1 : len(data)-3])
+		log.Println(strings.ToUpper(fmt.Sprintf("%02x", csum)))
+		log.Println(string(data[len(data)-3 : len(data)-1]))
+		if strings.ToUpper(fmt.Sprintf("%02x", csum)) != string(data[len(data)-3:len(data)-1]) {
 			err = errors.New("Check sum error")
 			return
 		} else {
 			cmd = string(data[3:5])
-			dat = data[5 : 5+dlen-2]
+			dat = data[5 : len(data)-3]
 			return
 		}
 	}
@@ -86,7 +87,7 @@ func CmdEndWithData(s *serial.Port) (cmd string, dat []byte, err error) {
 			err = e
 			return
 		} else {
-			log.Printf("<<Receive data: %s\n", buf)
+			log.Printf("<<Receive data: %x\n", buf)
 			cmd, dat, err = extractData(buf)
 			if err != nil {
 				return
@@ -101,4 +102,22 @@ func CmdEndWithData(s *serial.Port) (cmd string, dat []byte, err error) {
 		log.Printf("<<Receive device A0")
 	}
 	return
+}
+
+func makeCmd(cmd []byte) []byte {
+	var data []byte
+	dlen := len(cmd)
+	data = append(data, []byte(STX)...)
+	data = append(data, []byte(fmt.Sprintf("%02d", dlen))...)
+	data = append(data, cmd...)
+	data = append(data, []byte(strings.ToUpper(fmt.Sprintf("%x", checkSum(data[1:]))))...)
+	data = append(data, []byte(ETX)...)
+	return data
+}
+
+func ParseGC(dat []byte) (p, t, d, f float64, err error) {
+	//P0200T0010OD00000OF00000
+	var tp, tt, td, tf int
+	_, err = fmt.Sscanf(string(dat), "P%04dT%04dOD%05dOF%05d", &tp, &tt, &td, &tf)
+	return float64(tp / 10.0), float64(tt / 1000), float64(td / 10000), float64(tf / 10000), err
 }
