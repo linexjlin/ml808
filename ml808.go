@@ -69,14 +69,6 @@ func (m *ML808) IsConnected() bool {
 	return m.connected
 }
 
-const (
-	RM = "\x0205RM   9C\x03"
-)
-const (
-	//            cmdchecksum
-	GU = "\x0205GU%03d%s\x03"
-)
-
 func (m *ML808) Version() (string, error) {
 	if !m.connected {
 		return "", ErrNotConnected
