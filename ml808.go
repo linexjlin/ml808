@@ -17,7 +17,7 @@ const (
 	A0  = "\x02\x30\x32\x41\x30\x32\x44\x03"
 	A2  = "\x02\x30\x32\x41\x32\x32\x42\x03"
 	EOT = "\x04"
-	CAN = "\x18"
+	CAN = "\x0204cancan6C\x03"
 )
 
 var (
@@ -67,32 +67,6 @@ func (m *ML808) Disconnect() error {
 
 func (m *ML808) IsConnected() bool {
 	return m.connected
-}
-
-func (m *ML808) Version() (string, error) {
-	if !m.connected {
-		return "", ErrNotConnected
-	}
-	if err := CmdInit(m.s); err != nil {
-		return "", err
-	}
-	m.s.Write(makeCmd([]byte("RM   ")))
-	if _, dat, err := CmdEndWithData(m.s); err != nil {
-		return "", err
-	} else {
-		return string(dat), nil
-	}
-}
-
-func (m *ML808) GC(ch int) (p, t, d, f float64, err error) {
-	if dat, e := m.chCommon(ch); err != nil {
-		err = e
-		return
-	} else {
-		log.Println(string(dat))
-		p, t, d, f, err = ParseGC(dat)
-		return
-	}
 }
 
 func (m *ML808) chCommon(ch int) ([]byte, error) {

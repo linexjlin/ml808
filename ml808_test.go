@@ -24,3 +24,7 @@ func TestVersion(t *testing.T) {
 func TestGC(t *testing.T) {
 	ml.GC(1)
 }
+
+func TestCH(t *testing.T) {
+	ml.CH(209)
+}

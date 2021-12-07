@@ -100,8 +100,36 @@ func CmdEndWithData(s *serial.Port) (cmd string, dat []byte, err error) {
 		}
 	case A2:
 		log.Printf("<<Receive device A0")
+		_, err = s.Write([]byte(CAN))
+		if err != nil {
+			return
+		}
 	}
 	return
+}
+
+func CmdEnd(s *serial.Port) (err error) {
+	b := make([]byte, len(A0))
+	_, err = io.ReadFull(s, b)
+	if err != nil {
+		return
+	}
+	switch string(b) {
+	case A0:
+		log.Printf("<<Receive device A0")
+		_, err = s.Write([]byte(EOT))
+		if err != nil {
+			return
+		}
+		log.Println(">>Send EOT")
+	case A2:
+		log.Printf("<<Receive device A2")
+		_, err = s.Write([]byte(CAN))
+		if err != nil {
+			return
+		}
+	}
+	return nil
 }
 
 func makeCmd(cmd []byte) []byte {
