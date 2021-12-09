@@ -21,9 +21,12 @@ const (
 )
 
 var (
-	ErrNotConnected = errors.New("Not connected")
-	InvalidRsponse  = errors.New("Invalid response")
-	VersionWrong    = errors.New("Unable to get right version M8GX-01.5")
+	ErrNotConnected        = errors.New("Not connected")
+	InvalidRsponse         = errors.New("Invalid response")
+	InvalidChannel         = errors.New("Invalid channel")
+	InvalidChannelPressure = errors.New("Invalid Channel Pressure")
+	InvalidChannelTime     = errors.New("Invalid Channel Time")
+	VersionWrong           = errors.New("Unable to get right version M8GX-01.5")
 )
 
 //Commands G

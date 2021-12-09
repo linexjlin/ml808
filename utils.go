@@ -149,3 +149,34 @@ func ParseGC(dat []byte) (p, t, d, f float64, err error) {
 	_, err = fmt.Sscanf(string(dat), "P%04dT%04dOD%05dOF%05d", &tp, &tt, &td, &tf)
 	return float64(tp / 10.0), float64(tt / 1000), float64(td / 10000), float64(tf / 10000), err
 }
+
+func checkChan(ch int) error {
+	if ch < 0 || ch > 399 {
+		log.Fatalf("Invalid channel: %d\n", ch)
+		return InvalidChannel
+	}
+	return nil
+}
+
+func checkChPressure(p float64) error {
+	if p < 20.0 || p > 800.0 {
+		log.Fatalf("Invalid channel pressure: %f\n", p)
+		return InvalidChannelPressure
+	}
+	return nil
+}
+
+func checkChTime(t float64) error {
+	if t < 0.010 || t > 9.999 {
+		log.Fatalf("Invalid channel time: %f\n", t)
+		return InvalidChannelTime
+	}
+	return nil
+}
+func checkChTime2(t float64) error {
+	if t < 0.000 || t > 9.9999 {
+		log.Fatalf("Invalid channel time2: %f\n", t)
+		return InvalidChannelTime
+	}
+	return nil
+}

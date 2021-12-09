@@ -22,9 +22,14 @@ func TestVersion(t *testing.T) {
 }
 
 func TestGC(t *testing.T) {
-	ml.GC(1)
+	if _, _, _, _, err := ml.GC(1); err != nil {
+		t.Fail()
+	}
 }
 
 func TestCH(t *testing.T) {
-	ml.CH(209)
+	if err := ml.CH(209); err != nil {
+		t.Error(err)
+		t.Fail()
+	}
 }
