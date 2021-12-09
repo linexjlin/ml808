@@ -28,8 +28,33 @@ func TestGC(t *testing.T) {
 }
 
 func TestCH(t *testing.T) {
-	if err := ml.CH(209); err != nil {
+	if err := ml.CH(208); err != nil {
 		t.Error(err)
 		t.Fail()
+	}
+}
+
+func TestGU(t *testing.T) {
+	if _, _, _, _, _, _, _, _, _, err := ml.GU(209); err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+}
+
+func TestCU(t *testing.T) {
+	if cnt, err := ml.CU(); err != nil {
+		t.Error(err)
+		t.Fail()
+	} else {
+		log.Println(cnt)
+	}
+}
+
+func TestAR(t *testing.T) {
+	if cnt, err := ml.AR(); err != nil {
+		t.Error(err)
+		t.Fail()
+	} else {
+		log.Println(cnt)
 	}
 }

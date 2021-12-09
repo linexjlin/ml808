@@ -2,7 +2,6 @@ package ml808
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -70,24 +69,4 @@ func (m *ML808) Disconnect() error {
 
 func (m *ML808) IsConnected() bool {
 	return m.connected
-}
-
-func (m *ML808) chCommon(ch int) ([]byte, error) {
-	if !m.connected {
-		return []byte{}, ErrNotConnected
-	}
-	if err := CmdInit(m.s); err != nil {
-		return []byte{}, err
-	}
-	_, e := m.s.Write(makeCmd([]byte(fmt.Sprintf("%s%03d", "GC", ch))))
-	if e != nil {
-		return []byte{}, e
-	}
-	if cmd, dat, err := CmdEndWithData(m.s); err != nil {
-		log.Println(err)
-		return []byte{}, err
-	} else {
-		log.Println(string(dat), cmd)
-		return dat, nil
-	}
 }

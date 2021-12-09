@@ -143,13 +143,6 @@ func makeCmd(cmd []byte) []byte {
 	return data
 }
 
-func ParseGC(dat []byte) (p, t, d, f float64, err error) {
-	//P0200T0010OD00000OF00000
-	var tp, tt, td, tf int
-	_, err = fmt.Sscanf(string(dat), "P%04dT%04dOD%05dOF%05d", &tp, &tt, &td, &tf)
-	return float64(tp / 10.0), float64(tt / 1000), float64(td / 10000), float64(tf / 10000), err
-}
-
 func checkChan(ch int) error {
 	if ch < 0 || ch > 399 {
 		log.Fatalf("Invalid channel: %d\n", ch)
