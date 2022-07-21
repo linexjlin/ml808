@@ -136,7 +136,7 @@ func makeCmd(cmd []byte) []byte {
 	var data []byte
 	dlen := len(cmd)
 	data = append(data, []byte(STX)...)
-	data = append(data, []byte(fmt.Sprintf("%02d", dlen))...)
+	data = append(data, []byte(fmt.Sprintf("%02X", dlen))...)
 	data = append(data, cmd...)
 	data = append(data, []byte(strings.ToUpper(fmt.Sprintf("%x", checkSum(data[1:]))))...)
 	data = append(data, []byte(ETX)...)
@@ -152,7 +152,7 @@ func checkChan(ch int) error {
 }
 
 func checkChPressure(p float64) error {
-	if p < 20.0 || p > 800.0 {
+	if p < 0.0 || p > 800.0 {
 		log.Fatalf("Invalid channel pressure: %f\n", p)
 		return InvalidChannelPressure
 	}

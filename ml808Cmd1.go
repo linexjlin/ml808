@@ -2,6 +2,7 @@ package ml808
 
 import (
 	"fmt"
+	"log"
 	"math"
 )
 
@@ -101,6 +102,8 @@ func (m *ML808) setChanValueCmd(cmd string, ch int, v string) (err error) {
 	if err = CmdInit(m.s); err != nil {
 		return err
 	}
+	_data := makeCmd([]byte(fmt.Sprintf("%s  CH%03d%s", cmd, ch, v)))
+	log.Printf("%x \n %s\n", _data, _data)
 	_, err = m.s.Write(makeCmd([]byte(fmt.Sprintf("%s  CH%03d%s", cmd, ch, v))))
 	if err != nil {
 		return err
